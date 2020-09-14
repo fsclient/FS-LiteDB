@@ -19,8 +19,13 @@ jobs:
         source-url: https://nuget.pkg.github.com/fsclient/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        
     - name: Nuget Pack
       run: dotnet pack ./LiteDB/LiteDB.csproj --include-source --include-symbols --configuration Release -o ./artifacts
+
+    - name: Nuget Pack
+      run: dotnet pack ./LiteDB.Async/LiteDB.Async.csproj --include-source --include-symbols --configuration Release -o ./artifacts
+
     - name: Publish
       run: dotnet nuget push ./artifacts/*.nupkg
     - name: Publish
