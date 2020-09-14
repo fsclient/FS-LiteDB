@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>LiteDB.Async</PackageId>
+    <Version>0.0.2.1</Version>
+    <Authors>Mark Lockett</Authors>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <Title>LiteDB-Async</Title>
+    <Copyright>Copyright (c) 2020 Licensed by Apache 2.0</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/fsclient/FS-LiteDB</RepositoryUrl>
+    <ProjectUrl>https://github.com/fsclient/FS-LiteDB</ProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>LiteDB.Async - A lightweight async wrapper for LiteDB</Description>
+    <Summary>LiteDB.Async - A lightweight async wrapper for LiteDB</Summary>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LiteDB\LiteDB.csproj" />
+  </ItemGroup>
+</Project>

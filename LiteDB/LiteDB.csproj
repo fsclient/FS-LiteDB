@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
-    <AssemblyVersion>5.0.9.3</AssemblyVersion>
-    <FileVersion>5.0.9.3</FileVersion>
-    <VersionPrefix>5.0.9.3</VersionPrefix>
+    <AssemblyVersion>5.0.9.4</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
     <Authors>Maurício David</Authors>
     <Product>LiteDB</Product>
     <Description>LiteDB - A lightweight embedded .NET NoSQL document store in a single datafile</Description>
@@ -12,12 +12,13 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <Title>LiteDB</Title>
     <PackageId>LiteDB</PackageId>
-    <PackageVersion>5.0.9.3</PackageVersion>
+    <PackageVersion>$(AssemblyVersion)</PackageVersion>
     <PackageTags>database nosql embedded</PackageTags>
     <PackageIcon>icon_64x64.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://www.litedb.org</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fsclient/FS-LiteDB</RepositoryUrl>
+    <ProjectUrl>https://github.com/fsclient/FS-LiteDB</ProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RootNamespace>LiteDB</RootNamespace>
     <AssemblyName>LiteDB</AssemblyName>
