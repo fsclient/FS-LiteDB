@@ -16,6 +16,16 @@ namespace LiteDB.Async
         ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
         ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
+
+        /// <summary>
+        /// Starts LiteDB database using a connection string for file system database
+        /// </summary>
+        public LiteDatabaseAsync(LiteDatabase liteDB)
+        {
+            _liteDB = liteDB;
+            _backgroundThread = Task.Run(BackgroundLoop);
+        }
+
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
         /// </summary>
