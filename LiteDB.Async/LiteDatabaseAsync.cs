@@ -12,10 +12,10 @@ namespace LiteDB.Async
     {
         private readonly LiteDatabase _liteDB;
         private readonly Task _backgroundThread;
-        ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
-        ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
-        ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
+        private readonly ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
+        private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
@@ -48,24 +48,28 @@ namespace LiteDB.Async
         private void BackgroundLoop()
         {
             LiteAsyncDelegate function;
-            var waitHandles = new WaitHandle[] { _newTaskArrived.WaitHandle, _shouldTerminate.WaitHandle };
-            while (true)
+            var token = cancellationTokenSource.Token;
+            try
             {
-                var triggerEvent = WaitHandle.WaitAny(waitHandles);
-                if (triggerEvent == 1)
+                while (!token.IsCancellationRequested)
                 {
-                    return;
-                }
-                lock (_queueLock)
-                {
-                    if (!_queue.TryDequeue(out function))
+                    _newTaskArrived.Wait(token);
+
+                    lock (_queueLock)
                     {
-                        // reset when queue is empty
-                        _newTaskArrived.Reset();
-                        continue;
+                        if (!_queue.TryDequeue(out function))
+                        {
+                            // reset when queue is empty
+                            _newTaskArrived.Reset();
+                            continue;
+                        }
                     }
+                    function();
                 }
-                function();
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                // Ignore
             }
         }
 
@@ -116,9 +120,9 @@ namespace LiteDB.Async
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-            {            
-                _shouldTerminate.Set();
-                _backgroundThread.Wait();
+            {
+                cancellationTokenSource.Cancel();
+                 _backgroundThread.Wait();
                 _liteDB.Dispose();
             }
         }
