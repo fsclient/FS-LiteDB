@@ -1,0 +1,27 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Setup Nuget source
+      run: dotnet nuget add source https://nuget.pkg.github.com/fsclient/index.json -n github -u fsclient -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+    - name: Nuget Pack
+      run: dotnet pack ./LiteDB/LiteDB.csproj --include-source --include-symbols --configuration Release -o ./artifacts  -p:TargetFrameworks="netstandard1.3;netstandard2.0"
+    - name: Publish
+      run: dotnet nuget push ./artifacts/*.nupkg --source "github"
+    - name: Publish
+      run: dotnet nuget push ./artifacts/*.snupkg --source "github"
