@@ -8,14 +8,14 @@ using System.IO;
 
 namespace LiteDB.Async
 {
-    public class LiteDatabaseAsync : IDisposable
+    public sealed class LiteDatabaseAsync : IDisposable
     {
         private readonly LiteDatabase _liteDB;
-        private readonly Task _backgroundThread;
         private readonly ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
         private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private bool disposed;
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
@@ -23,7 +23,7 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(LiteDatabase liteDB)
         {
             _liteDB = liteDB;
-            _backgroundThread = Task.Run(BackgroundLoop);
+            _ = Task.Run(BackgroundLoop);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(string connectionString)
         {
             _liteDB = new LiteDatabase(connectionString);
-            _backgroundThread = Task.Run(BackgroundLoop);
+            _ = Task.Run(BackgroundLoop);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(Stream stream, BsonMapper mapper = null)
         {
             _liteDB = new LiteDatabase(stream, mapper);
-            _backgroundThread = Task.Run(BackgroundLoop);
+            _ = Task.Run(BackgroundLoop);
         }
 
         private void BackgroundLoop()
@@ -75,6 +75,11 @@ namespace LiteDB.Async
 
         public void Enqueue<T>(TaskCompletionSource<T> tcs, LiteAsyncDelegate function)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(nameof(LiteDatabaseAsync));
+            }
+
             lock (_queueLock)
             {
                 _queue.Enqueue(() => {
@@ -117,13 +122,12 @@ namespace LiteDB.Async
         }
         #endregion
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing)
             {
+                disposed = true;
                 cancellationTokenSource.Cancel();
-                Enqueue(new TaskCompletionSource<bool>(), () => { });
-                 _backgroundThread.Wait();
                 _liteDB.Dispose();
             }
         }
