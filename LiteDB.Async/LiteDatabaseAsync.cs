@@ -122,6 +122,7 @@ namespace LiteDB.Async
             if (disposing)
             {
                 cancellationTokenSource.Cancel();
+                Enqueue(new TaskCompletionSource<bool>(), () => { });
                  _backgroundThread.Wait();
                 _liteDB.Dispose();
             }
