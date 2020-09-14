@@ -17,7 +17,7 @@
     <PackageIcon>icon_64x64.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://www.litedb.org</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/mbdavid/LiteDB</RepositoryUrl>
+    <RepositoryUrl>https://github.com/fsclient/FS-LiteDB</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RootNamespace>LiteDB</RootNamespace>
     <AssemblyName>LiteDB</AssemblyName>
